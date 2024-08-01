@@ -23,6 +23,7 @@ import { useRouter } from 'vue-router'
 import Pop from '@/components/pop.vue'
 import CoinFrontImg from '@/assets/coin-front.png'
 import CoinEndImg from '@/assets/coin-end.png'
+import type { Record } from '@/types'
 
 const emit = defineEmits(['close', 'end'])
 const coinList = ref<
@@ -34,7 +35,7 @@ const coinList = ref<
     }>
 >([])
 
-const record = ref({
+const record = ref<Record>({
     id: 0,
     manifestation: '',
     addTime: 0
@@ -97,7 +98,7 @@ onUnmounted(() => {
     cancelAnimationFrame(raf)
 })
 
-function getRecord() {
+function getRecord(): Record {
     const manifestation = coinList.value.map((item) => (item.flag ? '字' : 'o')).join('')
 
     const id = coinList.value.reduce(

@@ -1,14 +1,9 @@
 import { ref, onMounted } from 'vue'
+import type { Record } from '@/types'
 export function useRecord() {
-    const records = ref<
-        Array<{
-            id: number
-            manifestation: string
-            addTime: number
-        }>
-    >([])
+    const records = ref<Array<Record>>([])
 
-    function addRecord(record) {
+    function addRecord(record: Record) {
         records.value.push(record)
         localStorage.setItem('_divination_records', JSON.stringify(records.value))
     }

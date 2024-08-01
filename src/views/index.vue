@@ -17,11 +17,12 @@ import { ref } from 'vue'
 import PopGame from './pop-game.vue'
 import { useRecord } from '@/hooks/use-record'
 import { useRouter } from 'vue-router'
+import type { Record } from '@/types'
 
 const show = ref(false)
 
 const { addRecord } = useRecord()
-function handleEnd(result: any[]) {
+function handleEnd(result: Record) {
     addRecord(result)
 }
 
