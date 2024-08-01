@@ -6,19 +6,39 @@
         <p class="tips">注：硬币图像或国徽面为阴，画○一字一面为阴面，标记为“○”。</p>
         <button class="btn mt4" @click="handleClick">开始</button>
     </div>
+
+    <div class="affix-btn">
+        <div @click="gotoSelf">记录</div>
+    </div>
+    <PopGame v-if="show" @end="handleEnd" @close="show = false" />
 </template>
-<script setup>
+<script setup lang="ts">
+import { ref } from 'vue'
+import PopGame from './pop-game.vue'
+import { useRecord } from '@/hooks/use-record'
 import { useRouter } from 'vue-router'
+
+const show = ref(false)
+
+const { addRecord } = useRecord()
+function handleEnd(result: any[]) {
+    addRecord(result)
+}
+
 const router = useRouter()
 const handleClick = () => {
-    router.push('/game')
+    show.value = true
+}
+
+function gotoSelf() {
+    router.push('/self')
 }
 </script>
 
 <style scoped>
 .container {
     height: 100%;
-    padding: 2rem;
+    padding: 0.3rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -40,35 +60,21 @@ const handleClick = () => {
     font-size: 14px;
 }
 
-h1 {
-    font-family: Righteous;
-    color: white;
-    font-size: 4rem;
-    text-transform: uppercase;
-    line-height: 1;
-    animation: letterspacing 5s infinite alternate ease-in-out;
-    display: block;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate3d(-50%, -50%, 0);
-    letter-spacing: -2.2rem;
+.affix-btn {
+    position: fixed;
+    top: 1rem;
+    right: 0.34rem;
 }
-
-@keyframes letterspacing {
-    0% {
-        letter-spacing: -2.2rem;
-        filter: blur(0.5rem);
-    }
-
-    50% {
-        filter: blur(0.5rem);
-    }
-
-    100% {
-        letter-spacing: 0.5rem;
-        filter: blur(0rem);
-        color: #fff;
-    }
+.affix-btn div {
+    width: 0.57rem;
+    height: 0.57rem;
+    background: rgba(0, 0, 0, 0.56);
+    border-radius: 0.16rem;
+    border: none;
+    color: #ffffff;
+    font-size: 0.22rem;
+    line-height: 0.57rem;
+    font-weight: 600;
+    text-align: center;
 }
 </style>

@@ -1,7 +1,5 @@
 <template>
-
-    <div>
-        <button class="btn" @click="start">卜卦</button>
+    <Pop :model-value="true">
         <div class="coin-wrap">
             <div
                 class="coin"
@@ -13,19 +11,20 @@
                 }"
             ></div>
         </div>
-
-        <button class="btn" @click="solve">解卦</button>
-    </div>
+        <div class="btn-wrap">
+            <button class="button" @click="solve">查看卦辞</button>
+            <button class="button" @click="emit('close')">确认</button>
+        </div>
+    </Pop>
 </template>
-
-<script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+<script lang="ts" setup>
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import Pop from '@/components/pop.vue'
+import CoinFrontImg from '@/assets/coin-front.png'
+import CoinEndImg from '@/assets/coin-end.png'
 
-import CoinFrontImg from '../assets/coin1.jpg'
-import CoinEndImg from '../assets/coin3.png'
-
-const emit = defineEmits(['end'])
+const emit = defineEmits(['close', 'end'])
 const coinList = ref<
     Array<{
         deg: number
@@ -35,6 +34,12 @@ const coinList = ref<
     }>
 >([])
 
+const record = ref({
+    id: 0,
+    manifestation: '',
+    addTime: 0
+})
+
 function easing(t: number, b: number, c: number, d: number) {
     return (c * (-Math.pow(2, (-10 * t) / d) + 1) * 1024) / 1023 + b
 }
@@ -42,7 +47,6 @@ function easing(t: number, b: number, c: number, d: number) {
 let raf: number
 function start() {
     produceList()
-    storage()
     let startTime = Date.now()
     tick()
     function tick() {
@@ -67,7 +71,7 @@ function start() {
         if (progress < duration) {
             raf = requestAnimationFrame(tick)
         } else {
-            emit('end')
+            emit('end', record.value)
         }
     }
 }
@@ -82,32 +86,34 @@ function produceList(random: boolean = true) {
             deg: 0
         }
     })
-    console.info(
-        'coinList.value',
-        coinList.value.map((item) => item.flag)
-    )
+    record.value = getRecord()
 }
 
-const STORAGE_KEY = '_divination_record'
-function storage() {
-    const record = localStorage.getItem(STORAGE_KEY)
-    localStorage.setItem('coinList', JSON.stringify(coinList.value))
-}
-
-produceList(false)
-
+onMounted(() => {
+    produceList(false)
+    start()
+})
 onUnmounted(() => {
     cancelAnimationFrame(raf)
 })
 
+function getRecord() {
+    const manifestation = coinList.value.map((item) => (item.flag ? '字' : 'o')).join('')
+
+    const id = coinList.value.reduce(
+        (pre, item, index) => pre + (item.flag ? 1 : 0) * 2 ** (5 - index),
+        0
+    )
+    return {
+        id,
+        manifestation,
+        addTime: Date.now()
+    }
+}
+
 const router = useRouter()
 function solve() {
-    let id = 0
-    coinList.value.forEach((item, index) => {
-        id += (item.flag ? 1 : 0) * 2 ** (5 - index)
-    })
-
-    router.push('/solve/' + id)
+    router.push('/solve/' + record.value.id)
 }
 </script>
 
@@ -116,10 +122,13 @@ function solve() {
     display: flex;
     margin: 2rem;
     /* flex-direction: column; */
-    height: 3rem;
+    height: 5rem;
+    width: 100%;
     gap: 10px;
     background: rgb(240 161 161 / 50%);
     border-radius: 0.4rem;
+    padding: 1rem 0.2rem;
+    z-index: 20;
 }
 .coin {
     flex: 1;
@@ -133,5 +142,21 @@ function solve() {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center center;
+}
+.btn-wrap {
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+    z-index: 20;
+}
+.button {
+    outline: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    background: #1989fa;
 }
 </style>
