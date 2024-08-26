@@ -1,5 +1,5 @@
 <template>
-    <div>第{{ data.index }}卦 > {{ data.manifestation }}</div>
+    <div>第{{ data.index }}卦 > {{ data.manifestation }} > {{ data.trigram }}</div>
     <div class="container">
         <div class="title">{{ data.title }}</div>
         <div>{{ data.auspiciousness }}</div>
@@ -15,6 +15,7 @@ import { changes } from './constant'
 const data = ref({
     index: '一',
     title: '困龙得水',
+    trigram: '',
     auspiciousness: '上上',
     manifestation: '字字字字字字',
     poetry: '困龙得水好运交，不由喜气上眉梢，一切谋事皆如意，往后时运渐渐高。蟠龙久困在渊中，一日升腾起半空，往来飞腾能变化，从今有祸不成凶。',
@@ -24,12 +25,11 @@ const data = ref({
 const route = useRoute()
 const id = Number(route.params.id) || 0
 
-const manifestation = id.toString(2).replace(/0/g, '○').replace(/1/g, '字')
+const manifestation = id.toString(2).padStart(6, '0').replace(/0/g, '○').replace(/1/g, '字')
 console.log('manifestation', manifestation)
 data.value = changes.find((item: any) => {
     return item.manifestation === manifestation
 })
-console.log('data.value', data.value)
 </script>
 
 <style scoped>
