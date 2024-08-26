@@ -63,9 +63,9 @@ function start() {
             const deg = totalDeg - easing(progress, 0, totalDeg - item.endDeg, duration)
             item.deg = Math.max(deg, item.endDeg)
             if (Math.floor(item.deg / 180) % 2 === 0) {
-                item.img = CoinFrontImg
-            } else {
                 item.img = CoinEndImg
+            } else {
+                item.img = CoinFrontImg
             }
         })
 
